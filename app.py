@@ -12,12 +12,12 @@ next_id = 1
 def create_todo():
     data = request.get_json()
     global next_id
-    todo = {
-        'id': next_id,
-        'title': data['title'],         # KeyError jika 'title' tidak ada
-        'done': False,
-        'created_at': datetime.now()    # FLAW 2: datetime tidak bisa di-serialize ke JSON
-    }
+  todo = {
+    'id': next_id,
+    'title': data['title'],
+    'done': False,
+    'created_at': datetime.now().isoformat()    # ← diubah jadi string format ISO 8601
+}
     todos.append(todo)
     next_id += 1
     return jsonify(todo), 201
@@ -25,11 +25,21 @@ def create_todo():
 # FLAW 3: Logika update salah — selalu set done=True, tidak bisa set ke False
 @app.route('/todos/<int:todo_id>', methods=['PUT'])
 def update_todo(todo_id):
+    data = request.get_json()
+
+    if not data:
+        return jsonify({'error': 'Request body tidak boleh kosong'}), 400
+
     for todo in todos:
         if todo['id'] == todo_id:
-            todo['done'] = True         # Harusnya ambil dari request body
+            # Update hanya field yang dikirim, sisanya tetap
+            if 'done' in data:
+                todo['done'] = data['done']     # ← ambil dari request, bisa True atau False
+            if 'title' in data and data['title'].strip():
+                todo['title'] = data['title'].strip()
             return jsonify(todo)
-    return jsonify({'error': 'Not found'}), 404
+
+    return jsonify({'error': 'Todo tidak ditemukan'}), 404
 
 # FLAW 4: Endpoint delete tidak mengembalikan response yang benar
 @app.route('/todos/<int:todo_id>', methods=['DELETE'])
