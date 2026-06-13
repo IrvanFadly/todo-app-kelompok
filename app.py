@@ -49,7 +49,7 @@ def delete_todo(todo_id):
             todos.pop(i)
             return jsonify({'message': f'Todo {todo_id} berhasil dihapus'}), 200  # ← ada response + status code
 
-    return jsonify({'error': 'Todo tidak ditemukan'}), 404   # ← handle kalau id tidak ada
+    return jsonify({'error': 'Todo tidak ditemukan'}), 404   # ← handle kalau id tidak ada                   # Harusnya return response + status code 204
 
 @app.route('/todos', methods=['GET'])
 def get_todos():
