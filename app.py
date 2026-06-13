@@ -37,7 +37,9 @@ def delete_todo(todo_id):
     for i, todo in enumerate(todos):
         if todo['id'] == todo_id:
             todos.pop(i)
-            return                       # Harusnya return response + status code 204
+            return jsonify({'message': f'Todo {todo_id} berhasil dihapus'}), 200  # ← ada response + status code
+
+    return jsonify({'error': 'Todo tidak ditemukan'}), 404   # ← handle kalau id tidak ada
 
 @app.route('/todos', methods=['GET'])
 def get_todos():
