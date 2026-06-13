@@ -12,12 +12,12 @@ next_id = 1
 def create_todo():
     data = request.get_json()
     global next_id
-    todo = {
-        'id': next_id,
-        'title': data['title'],         # KeyError jika 'title' tidak ada
-        'done': False,
-        'created_at': datetime.now()    # FLAW 2: datetime tidak bisa di-serialize ke JSON
-    }
+  todo = {
+    'id': next_id,
+    'title': data['title'],
+    'done': False,
+    'created_at': datetime.now().isoformat()    # ← diubah jadi string format ISO 8601
+}
     todos.append(todo)
     next_id += 1
     return jsonify(todo), 201
