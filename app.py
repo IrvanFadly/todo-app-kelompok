@@ -12,12 +12,17 @@ next_id = 1
 def create_todo():
     data = request.get_json()
     global next_id
-  todo = {
-    'id': next_id,
-    'title': data['title'],
-    'done': False,
-    'created_at': datetime.now().isoformat()    # ← diubah jadi string format ISO 8601
-}
+
+    # Validasi: data harus ada, title wajib ada dan tidak boleh kosong
+    if not data or 'title' not in data or not data['title'].strip():
+        return jsonify({'error': 'Title wajib diisi dan tidak boleh kosong'}), 400
+
+    todo = {
+        'id': next_id,
+        'title': data['title'].strip(),
+        'done': False,
+        'created_at': datetime.now().isoformat()
+    }
     todos.append(todo)
     next_id += 1
     return jsonify(todo), 201
